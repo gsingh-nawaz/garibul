@@ -1,34 +1,44 @@
 import { Router } from "express";
-import { db, contactSubmissionsTable } from "@workspace/db";
-import { SubmitContactBody } from "@workspace/api-zod";
+import { db, contactSubmissionsTable, contactJobsTable } from "@workspace/db";
+import { z } from "zod";
+
+const SubmitContactBody = z.object({
+  name: z.string().min(1).max(200),
+  email: z.string().email(),
+  company: z.string().max(200).optional(),
+  message: z.string().min(1).max(5000),
+});
 
 const contactRouter = Router();
 
 contactRouter.post("/contact", async (req, res) => {
   const parsed = SubmitContactBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: "Invalid request body" });
+    res.status(400).json({ error: "Invalid request body", details: parsed.error.format() });
     return;
   }
 
-  const { name, email, message } = parsed.data;
+  const { name, email, company, message } = parsed.data;
 
   try {
-    const [submission] = await db
-      .insert(contactSubmissionsTable)
-      .values({ name, email, message })
-      .returning();
+    await db.transaction(async (tx) => {
+      const [submission] = await tx
+        .insert(contactSubmissionsTable)
+        .values({ name, email, company, message })
+        .returning();
+
+      await tx
+        .insert(contactJobsTable)
+        .values({ submissionId: submission.id });
+    });
 
     res.status(201).json({
-      id: submission.id,
-      name: submission.name,
-      email: submission.email,
-      message: submission.message,
-      createdAt: submission.createdAt.toISOString(),
+      status: "queued",
+      message: "signal received",
     });
   } catch (err) {
-    req.log.error({ err }, "Failed to store contact submission");
-    res.status(500).json({ error: "Failed to store submission" });
+    req.log.error({ err }, "Failed to process contact submission");
+    res.status(500).json({ error: "Failed to process submission" });
   }
 });
 
