@@ -1,0 +1,61 @@
+
+> @workspace/api-server@0.0.0 start /app/api-server
+> node --enable-source-maps ./dist/index.mjs
+
+[08:24:15.244] [32mINFO[39m (41308): [36mServer listening[39m
+    [35mport[39m: 8080
+[08:25:16.413] [31mERROR[39m (41308): [36mFailed to store contact submission[39m
+    [35mreq[39m: {
+      "id": 1,
+      "method": "POST",
+      "url": "/api/contact"
+    }
+    err: {
+      "type": "_DrizzleQueryError",
+      "message": "Failed query: insert into \"contact_submissions\" (\"id\", \"name\", \"email\", \"company\", \"message\", \"created_at\") values (default, $1, $2, default, $3, default) returning \"id\", \"name\", \"email\", \"company\", \"message\", \"created_at\"\nparams: Test User,test@example.com,Hello from test!: Connection terminated unexpectedly",
+      "stack":
+          Error: Failed query: insert into "contact_submissions" ("id", "name", "email", "company", "message", "created_at") values (default, $1, $2, default, $3, default) returning "id", "name", "email", "company", "message", "created_at"
+          params: Test User,test@example.com,Hello from test!
+              at NodePgPreparedQuery.queryWithCache (/app/node_modules/.pnpm/drizzle-orm@0.45.2_@types+pg@8.18.0_pg@8.20.0/node_modules/src/pg-core/session.ts:73:11)
+              at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+              at async <anonymous> (/app/node_modules/.pnpm/drizzle-orm@0.45.2_@types+pg@8.18.0_pg@8.20.0/node_modules/src/node-postgres/session.ts:154:19)
+              at async <anonymous> (/app/api-server/src/routes/contact.ts:17:26)
+          caused by: Error: Connection terminated unexpectedly
+              at <anonymous> (/app/node_modules/.pnpm/pg-pool@3.13.0_pg@8.20.0/node_modules/pg-pool/index.js:45:11)
+              at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+              at async <anonymous> (/app/node_modules/.pnpm/drizzle-orm@0.45.2_@types+pg@8.18.0_pg@8.20.0/node_modules/src/node-postgres/session.ts:161:13)
+              at async NodePgPreparedQuery.queryWithCache (/app/node_modules/.pnpm/drizzle-orm@0.45.2_@types+pg@8.18.0_pg@8.20.0/node_modules/src/pg-core/session.ts:71:12)
+              at async <anonymous> (/app/node_modules/.pnpm/drizzle-orm@0.45.2_@types+pg@8.18.0_pg@8.20.0/node_modules/src/node-postgres/session.ts:154:19)
+              at async <anonymous> (/app/api-server/src/routes/contact.ts:17:26)
+      "query": "insert into \"contact_submissions\" (\"id\", \"name\", \"email\", \"company\", \"message\", \"created_at\") values (default, $1, $2, default, $3, default) returning \"id\", \"name\", \"email\", \"company\", \"message\", \"created_at\"",
+      "params": [
+        "Test User",
+        "test@example.com",
+        "Hello from test!"
+      ]
+    }
+[08:25:16.543] [32mINFO[39m (41308): [36mrequest errored[39m
+    [35mreq[39m: {
+      "id": 1,
+      "method": "POST",
+      "url": "/api/contact"
+    }
+    [35mres[39m: {
+      "statusCode": 500
+    }
+    [35mresponseTime[39m: 334
+    err: {
+      "type": "Error",
+      "message": "failed with status code 500",
+      "stack":
+          Error: failed with status code 500
+              at onResFinished (/app/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:115:39)
+              at ServerResponse.onResponseComplete (/app/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:178:14)
+              at ServerResponse.emit (node:events:531:35)
+              at onFinish (node:_http_outgoing:1084:10)
+              at callback (node:internal/streams/writable:766:21)
+              at afterWrite (node:internal/streams/writable:710:5)
+              at afterWriteTick (node:internal/streams/writable:696:10)
+              at process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+    }
+ ELIFECYCLE  Command failed.
