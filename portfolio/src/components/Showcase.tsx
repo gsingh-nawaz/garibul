@@ -35,7 +35,6 @@ const projects = [
   },
 ];
 
-const CARD_VW = 82;   // each card width as % of viewport
 const GAP_PX = 24;    // gap between cards
 
 export function Showcase() {
@@ -47,37 +46,40 @@ export function Showcase() {
     const track = trackRef.current;
     if (!container || !track) return;
 
-    if (window.innerWidth < 768) return;
+    const ctx = gsap.context(() => {
+      const isDesktop = window.matchMedia("(min-width: 768px)").matches;
 
-    const tween = gsap.to(track, {
-      x: () => -(track.scrollWidth - window.innerWidth),
-      ease: "none",
-      scrollTrigger: {
-        trigger: container,
-        pin: true,
-        pinSpacing: true,
-        scrub: 1,
-        start: "top top",
-        end: () => `+=${track.scrollWidth - window.innerWidth}`,
-        invalidateOnRefresh: true,
-      },
-    });
+      if (isDesktop) {
+        // We calculate the distance to scroll
+        // It's the total width of the track minus the viewport width
+        const xDist = track.scrollWidth - window.innerWidth;
 
-    return () => {
-      tween.kill();
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    };
+        gsap.to(track, {
+          x: -xDist,
+          ease: "none",
+          scrollTrigger: {
+            trigger: container,
+            pin: true,
+            scrub: true,
+            start: "top top",
+            end: () => `+=${xDist}`,
+            invalidateOnRefresh: true,
+          },
+        });
+      }
+    }, container);
+
+    return () => ctx.revert();
   }, []);
 
   return (
     <section
       ref={containerRef}
       id="systems"
-      className="bg-background relative"
-      style={{ height: '100vh', overflow: 'hidden' }}
+      className="bg-background relative flex flex-col justify-center min-h-screen md:h-screen md:overflow-hidden py-24 md:py-0"
     >
       {/* Title — sits at top inside the pinned section */}
-      <div className="px-8 md:px-14 pt-12 pb-6 relative z-10 flex-shrink-0">
+      <div className="md:absolute md:top-0 md:left-0 w-full px-8 md:px-14 pt-12 pb-6 z-20">
         <div className="font-mono text-[10px] tracking-widest text-accent mb-3 uppercase">
           PORTFOLIO_SHOWCASE
         </div>
@@ -90,28 +92,15 @@ export function Showcase() {
       {/* Horizontal track — no overflow clip here so cards slide naturally */}
       <div
         ref={trackRef}
-        className="flex"
+        className="flex flex-col md:flex-row items-center gap-6 px-6 md:px-[10vw] w-full md:w-max relative z-10"
         style={{
-          position: 'absolute',
-          top: 100,
-          left: 0,
-          bottom: 0,
-          gap: `${GAP_PX}px`,
-          paddingLeft: `${56}px`,
-          paddingRight: `${56}px`,
-          width: `calc(${projects.length * CARD_VW}vw + ${(projects.length + 1) * GAP_PX}px)`,
           willChange: 'transform',
         }}
       >
         {projects.map((proj, i) => (
           <div
             key={i}
-            className="project-card flex-shrink-0 relative bg-card border border-white/10 hover:border-primary/40 transition-colors group flex flex-col justify-between"
-            style={{
-              width: `${CARD_VW}vw`,
-              maxWidth: 900,
-              padding: '2rem 2.5rem',
-            }}
+            className="project-card flex-shrink-0 relative bg-card border border-white/10 hover:border-primary/40 transition-colors group flex flex-col justify-between w-full md:w-[75vw] md:max-w-[850px] lg:max-w-[1000px] h-auto md:h-[60vh] p-8 md:p-10"
             data-testid={`project-card-${i}`}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/4 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -119,23 +108,23 @@ export function Showcase() {
             {/* Top */}
             <div className="relative z-10">
               <div className="font-mono text-xs text-primary mb-3 tracking-widest">{proj.sys}</div>
-              <h3 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-5 leading-none">
+              <h3 className="text-3xl md:text-5xl font-black tracking-tighter uppercase mb-4 leading-none">
                 {proj.title}
               </h3>
-              <div className="font-mono text-xs text-white/40 border-l-2 border-accent pl-3 mb-5">
+              <div className="font-mono text-[10px] md:text-xs text-white/40 border-l-2 border-accent pl-3 mb-4">
                 STACK: {proj.stack}
               </div>
-              <p className="font-mono text-xs text-white/35 leading-relaxed max-w-md">
+              <p className="font-mono text-[10px] md:text-xs text-white/35 leading-relaxed max-w-md">
                 {proj.desc}
               </p>
             </div>
 
             {/* Bottom — metric + coming soon */}
-            <div className="relative z-10 flex items-end justify-between">
-              <div className="text-5xl md:text-7xl font-light text-accent/20 group-hover:text-accent/40 transition-colors duration-500 font-mono leading-none">
+            <div className="relative z-10 flex items-end justify-between mt-8">
+              <div className="text-4xl md:text-6xl font-light text-accent/20 group-hover:text-accent/40 transition-colors duration-500 font-mono leading-none">
                 {proj.metric}
               </div>
-              <div className="font-mono text-[10px] text-white/15 tracking-widest text-right leading-relaxed">
+              <div className="font-mono text-[9px] md:text-[10px] text-white/15 tracking-widest text-right leading-relaxed">
                 LINKS<br />COMING SOON
               </div>
             </div>
