@@ -38,9 +38,9 @@ export function Contact() {
   }, [mutation.isSuccess, mutation.isError]);
 
   const socials = [
-    { icon: Github, label: 'github.com/garibulsingh', href: 'https://github.com/garibulsingh' },
-    { icon: Linkedin, label: 'linkedin.com/in/garibulsingh', href: 'https://linkedin.com/in/garibulsingh' },
-    { icon: Twitter, label: 'x.com/garibulsingh', href: 'https://x.com/garibulsingh' },
+    { icon: Github, label: 'github.com/gsingh-nawaz', href: 'https://github.com/gsingh-nawaz' },
+    { icon: Linkedin, label: 'linkedin.com/in/garibul-singh', href: 'https://linkedin.com/in/garibul-singh' },
+    { icon: Twitter, label: 'x.com/garibulsingh', href: 'https://x.com/GaribulSingh' },
   ];
 
   return (
@@ -62,7 +62,7 @@ export function Contact() {
             <span className="text-accent font-bold tracking-widest">STATUS: ONLINE</span>
           </div>
           <div className="font-mono text-[11px] text-white/40 tracking-wider">
-            AVAILABLE FOR PROJECTS · Q1 2026 INTAKE OPEN
+            AVAILABLE FOR PROJECTS · OPEN
           </div>
         </div>
 
